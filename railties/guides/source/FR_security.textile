@@ -24,31 +24,30 @@ Les menaces qui pèsent sur les applications web incluent le vol de comptes util
 
 Afin de développer des applications web sécurisées, vous devez vous tenir à jour pour toutes les couches et connaître vos ennemis. Pour resté informé, abonnez-vous aux listes de de discussions sur la sécurité, lisez des blogs sur la sécurité et faites des vérifications de la sécurité une habitude (allez voir le chapitre sur <a href="#additional-resources">les Ressources Additionnelles</a>). Je fais cela à la main parce que c'est comment cela que l'on trouve les problèmes logiques vicieux de sécurité.
 
-h3. Sessions
+h3. Les sessions
 
-A good place to start looking at security is with sessions, which can be vulnerable to particular attacks.
+Un bon endroit pour s'attaquer à la sécurité est les sessions, qui peuvent être vulnérables à des attaques particulières.
 
-h4. What are Sessions?
+h4. Que sont les sessions ?
 
--- _HTTP is a stateless protocol. Sessions make it stateful._
+-- _HTTP est un protocol sans état. Les sessions lui ajoutent les états._
 
-Most applications need to keep track of certain state of a particular user. This could be the contents of a shopping basket or the user id of the currently logged in user. Without the idea of sessions, the user would have to identify, and probably authenticate, on every request.
-Rails will create a new session automatically if a new user accesses the application. It will load an existing session if the user has already used the application.
+La majorité des applications ont besoin de garder la trace de l'état d'un utilisateur particulier. Cela peut être le contenu d'un panier d'achat ou l'identifiant de l'utilisateur actuellement connecté. Sans le concept de session, l'utilisateur aurait probablement à s'identifier, et probablement à s'authentifier, à chaque requête. Rails va automatiquement créé une nouvelle sessions quand un nouvel utilisateur accède à l'application. Il chargera une session existante si l'utilisateur a déjà utilisé l'application.
 
-A session usually consists of a hash of values and a session id, usually a 32-character string, to identify the hash. Every cookie sent to the client's browser includes the session id. And the other way round: the browser will send it to the server on every request from the client. In Rails you can save and retrieve values using the session method:
+Une sessions consiste usuellement en un tableau associatif de valeurs et un identifiant de session, généralement une chaîne de 32 caractères, pour identifier ce tableau associatif. Chaque cookie envoyé au navigateur de l'utilisateur contient cet identifiant de session. Et de même dans l'autre sens : le navigateur l'enverra au serveur à chaque requête de l'utilisateur. Dans Rails, vous pouvez enregistrer et récupérer des valeurs en utilisant la méthode session :
 
 <ruby>
 session[:user_id] = @current_user.id
 User.find(session[:user_id])
 </ruby>
 
-h4. Session id
+h4. Identifiant de session
 
--- _The session id is a 32 byte long MD5 hash value._
+-- _L'identifiant de session est une valeur de 32 octets de long obtenu par MD5._
 
-A session id consists of the hash value of a random string. The random string is the current time, a random number between 0 and 1, the process id number of the Ruby interpreter (also basically a random number) and a constant string. Currently it is not feasible to brute-force Rails' session ids. To date MD5 is uncompromised, but there have been collisions, so it is theoretically possible to create another input text with the same hash value. But this has had no security impact to date.
+Un identifiant de session consiste en la valeur de hachage d'une chaîne de caractères aléatoire. Cette chaîne aléatoire est la concaténation de l'heure courant, d'un nombre aléatoire, de l'identifiant du processus de l'interpréteur Ruby courant (que l'on peut aussi assimiler à un nombre aléatoire) et d'une chaîne constante. Actuellement, il n'est pas possible de brute-forcer les identifiants de session de Rails. À ce jour, MD5 n'est pas compromis, mais il est théoriquement possible de créer des collisions, c'est-à-dire de trouver un autre texte en entrée qui produit la même valeur de hachage.  Cela n'a toutefois aucun impact sur la sécurité de Rails.
 
-h4. Session Hijacking
+h4. Piratage de session
 
 -- _Stealing a user's session id lets an attacker use the web application in the victim's name._
 
