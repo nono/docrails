@@ -298,6 +298,21 @@ h6 {
 	height: 77px;
 }
 
+#header .af {
+	float: right;
+	background: url(../images/af83.png) no-repeat;
+	width: 193px;
+	text-indent: -9999em;
+	margin: 0;
+	padding: 0;
+}
+
+#header .af a {
+	text-decoration: none;
+	display: block;
+	height: 80px;
+}
+
 #feature p {
 	font-size: 1.2857em;
 	margin-bottom: 0.75em;

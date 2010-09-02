@@ -151,7 +151,8 @@ module RailsGuides
       header = $1
 
       header =~ /h2\.(.*)/
-      page_title = "Ruby on Rails Guides: #{$1.strip}"
+      #page_title = "Ruby on Rails Guides: #{$1.strip}"
+      page_title = $1.strip
 
       header = textile(header)
 
@@ -163,7 +164,7 @@ module RailsGuides
     def set_index(body, view)
       index = <<-INDEX
       <div id="subCol">
-        <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapters</h3>
+        <h3 class="chapter"><img src="images/chapters_icon.gif" alt="" />Chapitres</h3>
         <ol class="chapters">
       INDEX
 
