@@ -49,31 +49,30 @@ Un identifiant de session consiste en la valeur de hachage d'une chaîne de cara
 
 h4. Piratage de session
 
--- _Stealing a user's session id lets an attacker use the web application in the victim's name._
+-- _Voler l'identifiant de session d'un utilisateur permet à un attaquant d'utiliser l'application web à la place de la victime._
 
-Many web applications have an authentication system: a user provides a user name and password, the web application checks them and stores the corresponding user id in the session hash. From now on, the session is valid. On every request the application will load the user, identified by the user id in the session, without the need for new authentication. The session id in the cookie identifies the session.
+La plupart des applications web ont un système d'authentification : un utilisateur fournit un nom et un mot de passe, l'application les vérifie et enregistre dans la session l'identifiant utilisateur correspondant. À partir de là, la session est valide. À chaque requête, l'application chargera l'utilisateur, identifié par son id utilisateur présent dans la session, sans avoir à s'authentifier à nouveau. L'identifiant de session dans le cookie identifie la session.
 
-Hence, the cookie serves as temporary authentication for the web application. Everyone who seizes a cookie from someone else, may use the web application as this user – with possibly severe consequences. Here are some ways to hijack a session, and their countermeasures:
+Ainsi, le cookie sert d'authentification temporaire pour l'application web. N'importe qui récupère le cookie d'une autre personne peut utiliser l'application à sa place – ce qui peut avoir des conséquences néfastes. Voici quelques moyens de pirater une session, et leurs contre-mesures :
 
-* Sniff the cookie in an insecure network. A wireless LAN can be an example of such a network. In an unencrypted wireless LAN it is especially easy to listen to the traffic of all connected clients. This is one more reason not to work from a coffee shop. For the web application builder this means to _(highlight)provide a secure connection over SSL_.
+* Sniffer le cookie sur un réseau non-sécurisé. Un réseau wifi est un bon exemple d'un tel réseau. Dans un réseau wifi non-chiffré, il est particulièrement facile d'écouter le trafic de tous les clients connectés. C'est une bonne raison de ne pas travailler depuis un café. Pour les développeurs d'applications, cela signifie qu'il faut _(highlight)fournir une connexion sécurisée via SSL_.
 
-* Most people don't clear out the cookies after working at a public terminal. So if the last user didn't log out of a web application, you would be able to use it as this user. Provide the user with a _(highlight)log-out button_ in the web application, and _(highlight)make it prominent_.
+* La plupart des gens ne vide pas leurs cookies après avoir travaillé sur un ordinateur public. Aussi, si le dernier utilisateur ne s'est pas déconnecté d'une application web, vous pouvez l'utiliser à sa place. Fournissez à l'utilisateur _(highlight)un bouton de déconnexion_ dans votre application web et _(highlight)rendez-le visible_.
 
-* Many cross-site scripting (XSS) exploits aim at obtaining the user's cookie. You'll read <a href="#cross-site-scripting-xss">more about XSS</a> later.
+* De nombreux exploits de type cross-site scripting (XSS) visent à obtenir le cookie d'un utilisateur. Vous en apprendrez <a href="#cross-site-scripting-xss">plus sur les attaques XSS</a> plus loin.
 
-* Instead of stealing a cookie unknown to the attacker, he fixes a user's session identifier (in the cookie) known to him. Read more about this so-called session fixation later.
+* Plutôt que de voler un cookie inconnu, l'attaquant peut forcer l'identifiant de session d'un utilisateur (dans le cookie) à une valeur qu'il connaît. Cette attaque, nommée _session fixation_, vous sera expliquée ci-dessous.
 
-The main objective of most attackers is to make money. The underground prices for stolen bank login accounts range from $10–$1000 (depending on the available amount of funds), $0.40–$20 for credit card numbers, $1–$8 for online auction site accounts and $4–$30 for email passwords, according to the "Symantec Global Internet Security Threat Report":http://eval.symantec.com/mktginfo/enterprise/white_papers/b-whitepaper_internet_security_threat_report_xiii_04-2008.en-us.pdf.
+Le principal objectif de la plupart des attaquants est de se faire de l'argent. Les prix sur le marché noir pour des identifiants bancaires varient de 10€ à 1000€ (selon la somme disponible sur le compte), de 0,30€ à 20€ pour des numéros de carte bleue, de 1€ à 8€ pour des comptes sur des sites d'enchères en ligne et de 4€ à 30€ pour des mots de passe d'adresses emails, selon le "Symantec Global Internet Security Threat Report":http://eval.symantec.com/mktginfo/enterprise/white_papers/b-whitepaper_internet_security_threat_report_xiii_04-2008.en-us.pdf.
 
-h4. Session Guidelines
+h4. Recommandations pour les sessions
 
--- _Here are some general guidelines on sessions._
+-- _Voici quelques recommandations générales sur les sessions._
 
-* _(highlight)Do not store large objects in a session_. Instead you should store them in the database and save their id in the session. This will eliminate synchronization headaches and it won't fill up your session storage space (depending on what session storage you chose, see below).
-This will also be a good idea, if you modify the structure of an object and old versions of it are still in some user's cookies. With server-side session storages you can clear out the sessions, but with client-side storages, this is hard to mitigate.
+* _(highlight)N'enregistrez pas d'objets volumineux dans une sessions_. Au lieu de cela, vous devriez les sauvegarder dans votre base de données et n'enregistrer que leur identifiant dans la session. Cela élimine les casse-têtes liés à la synchronisation et évite de saturer l'espace de stockage des sessions (selon le type de stockage utilisé, voir ci-dessous).
+C'est également une bonne idée si vous modifiez la structure d'un objet et que d'anciennes versions de celui-ci se trouvent encore dans les cookies de certains utilisateurs. Avec un stockage des sessions coté serveur, vous pouvez encore vous en sortir en supprimant toutes les sessions, mais pour un stockage coté client, il n'y a pas grand chose à faire.
 
-* _(highlight)Critical data should not be stored in session_. If the user clears his cookies or closes the browser, they will be lost. And with a client-side session storage, the user can read the data.
-
+* _(highlight)Ne mettez pas de données critiques dans la session_. Si l'utilisateur nettoie ses cookies ou ferme son navigateur, elles seront perdues. Et avec un stockage des sessions coté client, l'utilisateur pourra également lire les données.
 
 h4. Session Storage
 
