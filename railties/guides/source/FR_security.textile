@@ -142,11 +142,11 @@ Si vous utilisez le plugin populaire RestfulAuthentication pour la gestion des u
 
 Une autre contre-mesure est de _(highlight)sauvegarder des propriétés spécifiques à l'utilisateur dans la session_, de les vérifier à chaque requête et de refuser l'accès si les informations ne correspondent pas. De telles propriétés peuvent d'être l'adresse IP de l'utilisateur ou son _user-agent_ (le nom du navigateur web). Gardez à l'esprit que certains fournisseurs d'accès à Internet et entreprises placent leurs utilisateurs derrière des proxys. _(highlight)L'adresse IP risque donc de changer au cours de la session_, ce qui empêchera les utilisateur d'utiliser votre application, ou alors de façon très limitée.
 
-h4. Session Expiry
+h4. Expiration des sessions
 
--- _Sessions that never expire extend the time-frame for attacks such as cross-site reference forgery (CSRF), session hijacking and session fixation._
+-- _Les sessions qui n'expirent jamais étendent la fenêtre temporelle des attaques telles les cross-site request forgery (CERF), les vols de sessions et les sessions fixations._
 
-One possibility is to set the expiry time-stamp of the cookie with the session id. However the client can edit cookies that are stored in the web browser so expiring sessions on the server is safer. Here is an example of how to _(highlight)expire sessions in a database table_. Call +Session.sweep("20 minutes")+ to expire sessions that were used longer than 20 minutes ago.
+Une possibilité est de définir la date d'expiration du cookie avec l'identifiant de session. Mais le client peut modifier les cookies enregistrés dans son navigateur web, il est donc plus prendre de faire expirer les sessions coté serveur. Voici un exemple de la manière de _(highlight)faire expirer des sessions dans une table d'une base de données_. Appeler +Session.sweep("20 minutes")+ fait expirer les sessions qui n'ont pas été utilisées au cours des 20 dernières minutes.
 
 <ruby>
 class Session < ActiveRecord::Base
@@ -160,7 +160,7 @@ class Session < ActiveRecord::Base
 end
 </ruby>
 
-The section about session fixation introduced the problem of maintained sessions. An attacker maintaining a session every five minutes can keep the session alive forever, although you are expiring sessions. A simple solution for this would be to add a created_at column to the sessions table. Now you can delete sessions that were created a long time ago. Use this line in the sweep method above:
+La section sur les sessions fixations a introduit le problème des sessions maintenues ouvertes. Un attaquant qui maintient une session ouverte chaque 5 minutes peut garder une session ouverte aussi longtemps qu'il le souhaite, malgré vos expirations de sessions. Une solution simple à ce problème est d'ajouter une colonne created_at à la table des sessions.  Vous pouvez maintenant supprimer les sessions qui ont été crées depuis plus longtemps qu'une durée fixée. Modifiez la méthode sweep ci-dessus avec cette ligne :
 
 <ruby>
 delete_all "updated_at < '#{time.to_s(:db)}' OR
