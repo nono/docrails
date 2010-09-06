@@ -74,19 +74,19 @@ C'est également une bonne idée si vous modifiez la structure d'un objet et que
 
 * _(highlight)Ne mettez pas de données critiques dans la session_. Si l'utilisateur nettoie ses cookies ou ferme son navigateur, elles seront perdues. Et avec un stockage des sessions coté client, l'utilisateur pourra également lire les données.
 
-h4. Session Storage
+h4. Stockage des sessions
 
--- _Rails provides several storage mechanisms for the session hashes. The most important are ActiveRecordStore and CookieStore._
+-- _Rails fournir plusieurs mécanismes de stockage pour les sessions. Les plus importants sont ActiveRecordStore et CookieStore._
 
-There are a number of session storages, i.e. where Rails saves the session hash and session id. Most real-live applications choose ActiveRecordStore (or one of its derivatives) over file storage due to performance and maintenance reasons. ActiveRecordStore keeps the session id and hash in a database table and saves and retrieves the hash on every request.
+Il y a de nombreux stockages de sessions, c'est-à-dire l'endroit où Rails garde les données d'une session et son identifiant. La plupart des applications en production choisissent ActiveRecordStore (ou un de ses dérivés) plutôt que le système de fichiers en raison des performances et des problématiques de maintenance. ActiveRecordStore conserve l'identifiant de session et les données associées dans une table de la base de données et enregistre et récupère ces informations à chaque requête.
 
-Rails 2 introduced a new default session storage, CookieStore. CookieStore saves the session hash directly in a cookie on the client-side. The server retrieves the session hash from the cookie and eliminates the need for a session id. That will greatly increase the speed of the application, but it is a controversial storage option and you have to think about the security implications of it:
+Avec Rails 2 est arrivé un nouveau moteur de stockage pour les sessions, CookieStore. CookieStore enregistre les données de session directement dans un cookie coté client. Le serveur récupère les données de session depuis le cookie, ce qui élimine le besoin de passer par un identifiant de session. Cela améliore grandement la vitesse d'une application, mais c'est une option controversée, et vous devriez réfléchir aux implications de sécurité avant de l'utiliser :
 
-* Cookies imply a strict size limit of 4kB. This is fine as you should not store large amounts of data in a session anyway, as described before. _(highlight)Storing the current user's database id in a session is usually ok_.
+* Les cookies ont une taille strictement limitée à 4 ko. C'est suffisant, vu vous n'avez de toute façon pas intérêt à enregistrer de grande quantités de données dans la session, comme vu précédemment. _(highlight)Enregistrer l'identifiant en base d'un utilisateur dans la session est généralement acceptable_.
 
-* The client can see everything you store in a session, because it is stored in clear-text (actually Base64-encoded, so not encrypted). So, of course, _(highlight)you don't want to store any secrets here_. To prevent session hash tampering, a digest is calculated from the session with a server-side secret and inserted into the end of the cookie.
+* Le client peut voir tout ce que vous enregistrez dans la session, car celle-ci est stockée en clair (en fait, elle est encodée en Base64 mais pas chiffrée). Donc, bien entendu, _(highlight)vous n'avez pas envie d'y mettre des données secrètes_. Pour éviter que les données de session ne soient manipulées, le serveur calcule une signature à partir des données et d'un secret et l'insère à la fin du cookie.
 
-That means the security of this storage depends on this secret (and on the digest algorithm, which defaults to SHA512, which has not been compromised, yet). So _(highlight)don't use a trivial secret, i.e. a word from a dictionary, or one which is shorter than 30 characters_. Put the secret in your environment.rb:
+Cela signifie que la sécurité de ce stockage repose sur ce secret (et sur l'algorithme de signature, SHA512 par défaut, qui n'a pas été compris, jusqu'à maintenant). Ainsi, _(highlight)n'utilisez pas un secret trivial, c'est-à-dire un mot présent dans un dictionnaire, ou avec moins de 30 caractères_. Placez le secret dans votre environment.rb :
 
 <ruby>
 config.action_dispatch.session = {
@@ -95,23 +95,23 @@ config.action_dispatch.session = {
 }
 </ruby>
 
-There are, however, derivatives of CookieStore which encrypt the session hash, so the client cannot see it.
+Sachez qu'il existe également des variantes de CookieStore qui chiffrent les données de session pour que le client ne puisse pas les lire.
 
-h4. Replay Attacks for CookieStore Sessions
+h4. Attaques par rejeu sur les sessions dans un CookieStore
 
--- _Another sort of attack you have to be aware of when using CookieStore is the replay attack._
+-- _Une autre sorte d'attaque dont vous devez être conscient quand vous utilisez un CookieStore est l'attaque par rejeu._
 
-It works like this:
+Elle fonctionne de cette façon:
 
-* A user receives credits, the amount is stored in a session (which is a bad idea anyway, but we'll do this for demonstration purposes).
-* The user buys something.
-* His new, lower credit will be stored in the session.
-* The dark side of the user forces him to take the cookie from the first step (which he copied) and replace the current cookie in the browser.
-* The user has his credit back.
+* L'utilisateur reçoit des credits dont la somme est enregistrée dans la session (ce qui est une très mauvaise idée dans tous les cas, mais faisons comme cela pour les besoins de la demonstration).
+* L'utilisateur achète quelque chose.
+* Son nouveau crédit, plus faible, est enregistré dans la sessions.
+* Le coté sombre de l'utilisateur le pousse à prendre le cookie de la première étape (qu'il a recopié) pour remplacer le cookie actuellement présent dans son navigateur.
+* L'utilisateur a, à nouveau, tous ses crédits.
 
-Including a nonce (a random value) in the session solves replay attacks. A nonce is valid only once, and the server has to keep track of all the valid nonces. It gets even more complicated if you have several application servers (mongrels). Storing nonces in a database table would defeat the entire purpose of CookieStore (avoiding accessing the database).
+Inclure un nonce (une valeur aléatoire) dans la session résout les attaques par rejeu. Un nonce n'est valide qu'une seule fois, et le serveur doit garder trace de tous les nonces valides. Cela devient encore plus compliqué si vous avez plusieurs serveurs applicatifs (mongrels). Enregistrer les nonces dans une base de données annule complètement l'intérêt du CookieStore (à savoir, ne pas accéder à la base de données).
 
-The best _(highlight)solution against it is not to store this kind of data in a session, but in the database_. In this case store the credit in the database and the logged_in_user_id in the session.
+La meilleure _(highlight)solution contre cette attaque est ne utiliser les sessions pour ce genre de données, mais la base de données_. Dans notre cas, cela consiste à enregistrer le crédit dans la base de données et le logged_in_user_id dans la session.
 
 h4. Session Fixation
 
