@@ -186,60 +186,60 @@ Il est important de noter que l'image ou lien forgé n'a pas nécessairement bes
 
 Les attaques CSRF apparaissent vraiment rarement dans les CVE (Common Vulnerabilities and Exposures) -- moins de 0,1% en 2006 -- mais c'est en réalité un 'géant dormant' [Grossman]. C'est en très forte contradiction avec les résultats de mes travaux de sécurité (et ceux d'autres personnes) – _(highlight)CSRF est une question de sécurité importante_.
 
-h4. CSRF Countermeasures
+h4. Les protections contre CSRF
 
--- _First, as is required by the W3C, use GET and POST appropriately. Secondly, a security token in non-GET requests will protect your application from CSRF._
+-- _Tout d'abord, comme requis par le W3C, utilisez GET et POST de manière appropriée. Ensuite, un token de sécurité pour toutes les requêtes autres que des GET protégera votre application des CSRF._
 
-The HTTP protocol basically provides two main types of requests - GET and POST (and more, but they are not supported by most browsers). The World Wide Web Consortium (W3C) provides a checklist for choosing HTTP GET or POST:
+Le protocole HTTP fournit principalement deux types de requêtes - GET et POST (plus d'autres, mais ils ne sont pas pris en charge par les navigateurs). Le World Wide Web Consortium (W3C) fournit une liste de contrôle pour choisir entre les GET et POST d'HTTP :
 
-*Use GET if:*
+*Utilisez GET si :*
 
-* The interaction is more _(highlight)like a question_ (i.e., it is a safe operation such as a query, read operation, or lookup).
+* L'interaction ressemble plus _(highlight)à une question_ (c'est-à-dire à une opération sûre comme une requête, une lecture ou une consultation).
 
-*Use POST if:*
+*Utilisez POST si :*
 
-* The interaction is more _(highlight)like an order_, or
-* The interaction _(highlight)changes the state_ of the resource in a way that the user would perceive (e.g., a subscription to a service), or
-* The user is _(highlight)held accountable for the results_ of the interaction.
+* L'interaction ressemble plus à _(highlight)un ordre_, ou
+* L'interaction _(highlight)modifie l'état_ d'une ressource d'une façon dont l'utilisateur pourra se rendre compte (par exemple, un abonnement à un service), ou
+* L'utilisateur est _(highlight)tenu responsable des résultats_ de cette interaction.
 
-If your web application is RESTful, you might be used to additional HTTP verbs, such as PUT or DELETE. Most of today‘s web browsers, however do not support them - only GET and POST. Rails uses a hidden +_method+ field to handle this barrier.
+Si votre application web est RESTful, vous pouvez utiliser des verbes HTTP additionnels, tels que PUT et DELETE. Pourtant, la plupart des navigateurs web actuels ne les supporte pas - seulement GET et POST. Rails emploie un champ caché +_method+ pour lever cette barrière.
 
-_(highlight)The verify method in a controller can make sure that specific actions may not be used over GET_. Here is an example to verify the use of the transfer action over POST. If the action comes in using any other verb, it redirects to the list action.
+_(highlight)La méthode verify d'un contrôleur permet de s'assurer que des actions spécifiques ne peuvent pas être déclenchées avec GET_. Voici un exemple d'utilisation de verify pour s'assurer que l'action transfer est faite avec un POST. Si l'action provient de n'importe quel autre verbe HTTP, elle redirigera vers l'action list.
 
 <ruby>
-verify :method => :post, :only => [:transfer], :redirect_to => {:action => :list}
+verify :method => :post, :only => [:transfer], :redirect_to => { :action => :list }
 </ruby>
 
-With this precaution, the attack from above will not work, because the browser sends a GET request for images, which will not be accepted by the web application.
+Avec cette précaution, l'attaque ne fonctionne plus, car le navigateur envoie une requête GET pour les images, qui est refusée par l'application web.
 
-But this was only the first step, because _(highlight)POST requests can be sent automatically, too_. Here is an example for a link which displays www.harmless.com as destination in the browser's status bar. In fact it dynamically creates a new form that sends a POST request.
+Mais ce n'est que la première étape, car _(highlight)les requêtes POST peuvent aussi être envoyées automatiquement_. Voici un exemple d'un lien qui affiche www.sans-danger.com comme destination dans la barre d'état. En fait, il crée à la volée un nouveau formulaire qui envoie une requête POST.
 
 <html>
-<a href="http://www.harmless.com/" onclick="
+<a href="http://www.sans-dander.com/" onclick="
   var f = document.createElement('form');
   f.style.display = 'none';
   this.parentNode.appendChild(f);
   f.method = 'POST';
   f.action = 'http://www.example.com/account/destroy';
   f.submit();
-  return false;">To the harmless survey</a>
+  return false;">Vers le sondage sans danger</a>
 </html>
 
-Or the attacker places the code into the onmouseover event handler of an image:
+Ou l'attaquant peut placer le code sur le gestionnaire d'événement onmouseover d'une image :
 
 <html>
-<img src="http://www.harmless.com/img" width="400" height="400" onmouseover="..." />
+<img src="http://www.sans-danger.com/img" width="400" height="400" onmouseover="..." />
 </html>
 
-There are many other possibilities, including Ajax to attack the victim in the background. The  _(highlight)solution to this is including a security token in non-GET requests_ which check on the server-side. In Rails 2 or higher, this is a one-liner in the application controller:
+De nombreuses autres possibilités existent, y compris de l'Ajax pour attaquer la victime en arrière-plan. La _(highlight)solution à ce problème est d'inclure un token de sécurité pour toutes les requêtes autres que GET_ qui sera vérifié coté serveur. Avec Rails à partir de la version 2, c'est l'affaire d'une ligne dans le contrôleur application :
 
 <ruby>
 protect_from_forgery :secret => "123456789012345678901234567890..."
 </ruby>
 
-This will automatically include a security token, calculated from the current session and the server-side secret, in all forms and Ajax requests generated by Rails. You won't need the secret, if you use CookieStorage as session storage. It will raise an ActionController::InvalidAuthenticityToken error, if the security token doesn't match what was expected.
+Cela ajoutera automatiquement un token de sécurité, calculé à partir de la session et d'un secret coté serveur, pour tous les formulaires et requêtes Ajax générés par Rails. Vous n'avez pas besoin du secret si vous utilisez CookieStorage comme stockage des sessions. Rails lèvera une erreur ActionController::InvalidAuthenticityToken si le token ne correspond pas à la valeur attendue.
 
-Note that _(highlight)cross-site scripting (XSS) vulnerabilities bypass all CSRF protections_. XSS gives the attacker access to all elements on a page, so he can read the CSRF security token from a form or directly submit the form. Read <a href="#cross-site-scripting-xss">more about XSS</a> later.
+Notez que _(highlight)les attaques XSS contournent toutes les protections contre CSRF_. Les XSS donne à l'attaquant accès à tous les éléments de la page, et il peut donc lire le token de sécurité depuis un formulaire ou soumettre directement le formulaire. Lisez <a href="#cross-site-scripting-xss">en plus sur les XSS</a> plus tard.
 
 h3. Redirection and Files
 
