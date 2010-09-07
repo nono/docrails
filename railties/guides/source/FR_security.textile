@@ -169,22 +169,22 @@ delete_all "updated_at < '#{time.to_s(:db)}' OR
 
 h3. Cross-Site Request Forgery (CSRF)
 
--- _This attack method works by including malicious code or a link in a page that accesses a web application that the user is believed to have authenticated. If the session for that web application has not timed out, an attacker may execute unauthorized commands._
+-- _Cette technique d'attaque fonctionne en incluant du code malicieux ou un lien dans une page qui accède à une application web dont l'utilisateur est réputé avoir accès. Si la session pour cette application web n'a pas expirée, l'attaquant peut exécuter des commandes non autorisées._
 
 !images/csrf.png!
 
-In the <a href="#sessions">session chapter</a> you have learned that most Rails applications use cookie-based sessions. Either they store the session id in the cookie and have a server-side session hash, or the entire session hash is on the client-side. In either case the browser will automatically send along the cookie on every request to a domain, if it can find a cookie for that domain. The controversial point is, that it will also send the cookie, if the request comes from a site of a different domain. Let's start with an example:
+Dans le <a href="#sessions">chapitre sur les sessions</a>, vous avez appris que la plupart des applications Rails utilisent des sessions à base de cookies. Soit elles stockent un identifiant de session dans le cookie et les données coté serveur, soit l'intégralité des données de session est présente coté client. Dans les deux cas, le navigateur enverra automatiquement le cookie à chaque requête vers le domaine concerné, s'il peut trouver un cookie pour ce domaine. Le point controversé est qu'il enverra également le cookie si la requête part d'un site sur un autre domaine. Mais commençons avec un exemple :
 
-* Bob browses a message board and views a post from a hacker where there is a crafted HTML image element. The element references a command in Bob's project management application, rather than an image file.
+* Bob visite un forum et voit un message posté par un hacker où un des éléments HTML, une image, a été forgé. Cet élément fait référence à une commande sur l'application de gestion de projets de Bob; plutôt qu'à un fichier d'image.
 * +&lt;img src="http://www.webapp.com/project/1/destroy"&gt;+
-* Bob's session at www.webapp.com is still alive, because he didn't log out a few minutes ago.
-* By viewing the post, the browser finds an image tag. It tries to load the suspected image from www.webapp.com. As explained before, it will also send along the cookie with the valid session id.
-* The web application at www.webapp.com verifies the user information in the corresponding session hash and destroys the project with the ID 1. It then returns a result page which is an unexpected result for the browser, so it will not display the image.
-* Bob doesn't notice the attack -- but a few days later he finds out that project number one is gone.
+* La session de Bob sur www.webapp.com est encore active, parce qu'il ne sait pas déconnecter quelques minutes auparavant.
+* En affichant le message, le navigateur trouve la balise image. Il essaye de la charger depuis www.webapp.com. Comme expliqué auparavant, il envoie aussi dans la requête le cookie avec l'identifiant de session valide.
+* L'application web sur www.webapp.com vérifie les informations de l'utilisateur dans la session correspondant et détruit le projet avec l'identifiant 1. Puis elle renvoie une page de résultat qui ne correspond pas aux attentes du navigateur, du coup il n'essaye pas d'afficher l'image.
+* Bob n'a pas remarqué l'attaque -- mais quelques jours plus tard, il découvre que le projet n°1 a disparu.
 
-It is important to notice that the actual crafted image or link doesn't necessarily have to be situated in the web application's domain, it can be anywhere – in a forum, blog post or email.
+Il est important de noter que l'image ou lien forgé n'a pas nécessairement besoin d'être placé sur le domaine de l'application web, il peut être n'importe où – dans un forum, un billet de blog ou un courriel.
 
-CSRF appears very rarely in CVE (Common Vulnerabilities and Exposures) -- less than 0.1% in 2006 -- but it really is a 'sleeping giant' [Grossman]. This is in stark contrast to the results in my (and others) security contract work – _(highlight)CSRF is an important security issue_.
+Les attaques CSRF apparaissent vraiment rarement dans les CVE (Common Vulnerabilities and Exposures) -- moins de 0,1% en 2006 -- mais c'est en réalité un 'géant dormant' [Grossman]. C'est en très forte contradiction avec les résultats de mes travaux de sécurité (et ceux d'autres personnes) – _(highlight)CSRF est une question de sécurité importante_.
 
 h4. CSRF Countermeasures
 
