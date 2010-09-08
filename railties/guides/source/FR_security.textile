@@ -265,13 +265,13 @@ http://www.example.com/site/legacy?param1=xy&param2=23&host=www.attacker.com
 
 En fin d'URL, cette clé ne sera pas remarquée et redirigera l'utilisateur vers le domaine attacker.com. Une simple protection est de _(highlight)n'inclure que les paramètres attendus dans l'action legacy_ (une approche par liste blanche, par opposition à la suppression des paramètres non-voulus). _(highlight) Et si vous redirigez vers une URL, vérifiez-la avec une liste blanche ou une expression rationnelle_.
 
-h5. Self-contained XSS
+h5. Attaque XSS autonome
 
-Another redirection and self-contained XSS attack works in Firefox and Opera by the use of the data protocol. This protocol displays its contents directly in the browser and can be anything from HTML or JavaScript to entire images:
+L'utilisation du protocole data permet une autre attaque XSS autonome par redirection qui fonctionne dans Firefox et Opera. Ce protocole affiche son contenu directement dans le navigateur et peut couvrir n'importe quoi depuis du HTML ou Javascript aux images :
 
 +data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K+
 
-This example is a Base64 encoded JavaScript which displays a simple message box. In a redirection URL, an attacker could redirect to this URL with the malicious code in it. As a countermeasure, _(highlight)do not allow the user to supply (parts of) the URL to be redirected to_.
+Cet exemple est un Javascript encodé en Base64 qui affiche une simple boîte de message. Dans une URL de redirection, l'attaquant peut rediriger vers cette URL avec le code malicieux en son sein. Pour contrer cela, _(highlight)n'autorisez pas les utilisateurs à fournir (une partie de) l'URL de redirection_.
 
 h4. File Uploads
 
