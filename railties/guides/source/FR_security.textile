@@ -298,25 +298,25 @@ Un inconvénient significatif du traitement synchrone des fichiers uploadés (co
 
 La solution la plus efficace à cela est de _(highlight)traiter de manière asynchrone les médias_ : enregistrer le fichier et programmez une requête de traitement dans la base de données. Un second processus se chargera du traitement du fichier en tâche de fond.
 
-h4. Executable Code in File Uploads
+h4. Code exécutable dans les fichiers uploadés
 
--- _Source code in uploaded files may be executed when placed in specific directories. Do not place file uploads in Rails' /public directory if it is Apache's home directory._
+-- _Le code source d'un fichier uploadé peut être exécuté si celui-ci est placé dans certains répertoires spécifiques. Ne placez pas les fichiers uploadés dans le répertoire /public de Rails si c'est le répertoire racine d'Apache._
 
-The popular Apache web server has an option called DocumentRoot. This is the home directory of the web site, everything in this directory tree will be served by the web server. If there are files with a certain file name extension, the code in it will be executed when requested (might require some options to be set). Examples for this are PHP and CGI files. Now think of a situation where an attacker uploads a file “file.cgi” with code in it, which will be executed when someone downloads the file.
+Le célèbre serveur web Apache a une option appelée DocumentRoot. Elle sert à définir le répertoire racine de chaque site web, et tout ce qui se trouve sous ce répertoire pourra être traité par le serveur web. S'il s'y trouve des fichiers avec une certaine extension, le code de ceux-ci pourra être exécuté quand ils seront demandés (cela peut demander que certaines options soient définies). Les fichiers PHP et CGI en sont des exemples. Maintenant, pensez à la situation où un attaquant upload un fichier “file.cgi” avec du code dedans, celui-ci sera exécuté quand quelqu'un téléchargera ce fichier.
 
-_(highlight)If your Apache DocumentRoot points to Rails' /public directory, do not put file uploads in it_, store files at least one level downwards.
+_(highlight)Si le DocumentRoot d'Apache pointe sur le répertoire /public de Rails, ne placez pas les fichiers uploadés dedans_, enregistrez-les au moins un niveau plus bas.
 
-h4. File Downloads
+h4. Téléchargement de fichiers
 
--- _Make sure users cannot download arbitrary files._
+-- _Assurez-vous que les utilisateurs ne peuvent pas télécharger de fichiers arbitraires._
 
-Just as you have to filter file names for uploads, you have to do so for downloads. The send_file() method sends files from the server to the client. If you use a file name, that the user entered, without filtering, any file can be downloaded:
+De la même manière que vous devez filtrer les noms de fichier pour les uploads, vous devez les filtrer pour les téléchargements. La méthode send_file() envoie les fichiers depuis le serveur vers le client. Si vous utilisez un nom de fichier entré par un utilisateur sans le filtrer, n'importe quel fichier peut être téléchargé :
 
 <ruby>
 send_file('/var/www/uploads/' + params[:filename])
 </ruby>
 
-Simply pass a file name like “../../../etc/passwd” to download the server's login information. A simple solution against this, is to _(highlight)check that the requested file is in the expected directory_:
+Passez simplement un nom de fichier comme “../../../etc/passwd” pour télécharger les informations de login du serveur. Une solution simple contre cela est de _(highlight)vérifier que le fichier demandé est bien dans le répertoire attendu_ :
 
 <ruby>
 basename = File.expand_path(File.join(File.dirname(__FILE__), '../../files'))
@@ -326,7 +326,7 @@ raise if basename !=
 send_file filename, :disposition => 'inline'
 </ruby>
 
-Another (additional) approach is to store the file names in the database and name the files on the disk after the ids in the database. This is also a good approach to avoid possible code in an uploaded file to be executed. The attachment_fu plugin does this in a similar way.
+Une autre approche (supplémentaire) est d'enregistrer les noms de fichier dans la base de données et de nommer les fichiers sur le disque d'après les identifiants dans la base de données. C'est aussi une bonne approche pour éviter qu'un éventuel code dans un fichier uploadé puisse être exécuté. Le plugin attachment_fu procède de cette manière
 
 h3. Intranet and Admin Security
 
