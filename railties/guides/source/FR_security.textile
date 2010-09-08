@@ -241,15 +241,15 @@ Cela ajoutera automatiquement un token de sécurité, calculé à partir de la s
 
 Notez que _(highlight)les attaques XSS contournent toutes les protections contre CSRF_. Les XSS donne à l'attaquant accès à tous les éléments de la page, et il peut donc lire le token de sécurité depuis un formulaire ou soumettre directement le formulaire. Lisez <a href="#cross-site-scripting-xss">en plus sur les XSS</a> plus tard.
 
-h3. Redirection and Files
+h3. Redirections et Fichiers
 
-Another class of security vulnerabilities surrounds the use of redirection and files in web applications.
+Une autre classe de vulnérabilités liés à la sécurité entoure l'utilisation des redirections et des fichiers dans les applications web.
 
-h4. Redirection
+h4. Les redirections
 
--- _Redirection in a web application is an underestimated cracker tool: Not only can the attacker forward the user to a trap web site, he may also create a self-contained attack._
+-- _Les redirections dans une application web sont un outil sous-estimé par les crackers : non seulement l'attaquant peut renvoyer l'utilisateur vers un site piégé, mais il peut aussi créé une attaque sur l'application elle-même._
 
-Whenever the user is allowed to pass (parts of) the URL for redirection, it is possibly vulnerable. The most obvious attack would be to redirect users to a fake web application which looks and feels exactly as the original one. This so-called phishing attack works by sending an unsuspicious link in an email to the users, injecting the link by XSS in the web application or putting the link into an external site. It is unsuspicious, because the link starts with the URL to the web application and the URL to the malicious site is hidden in the redirection parameter: http://www.example.com/site/redirect?to= www.attacker.com. Here is an example of a legacy action:
+À chaque fois que l'utilisateur est autorisé à passer (une partie de) l'URL de redirection, c'est une vulnérabilité potentielle. L'attaque la plus évident serait de rediriger l'utilisateur vers une fausse application web qui ressemble et se comporte exactement comme l'originale. Cette attaque dite de phishing fonctionne en envoyant un lien qui ne paraît pas suspicieux dans un email ) des utilisateurs, en injectant le lien par une attaque XSS dans l'application web ou encore en déposant de lien sur un site externe. Le lien n'inspire pas la suspicion car il commence avec l'URL de l'application web originale, l'URL du site de l'attaquant n'apparaît que caché dans le paramètre de redirection :  http://www.example.com/site/redirect?to= www.attacker.com. Voici un exemple d'une action legacy :
 
 <ruby>
 def legacy
@@ -257,13 +257,13 @@ def legacy
 end
 </ruby>
 
-This will redirect the user to the main action if he tried to access a legacy action. The intention was to preserve the URL parameters to the legacy action and pass them to the main action. However, it can exploited by an attacker if he includes a host key in the URL:
+Cela redirigera l'utilisateur vers l'action main s'il essaye d'accéder à l'action legacy. L'intention du développeur était de préserver les paramètres de l'URL de l'action legacy et les transmettre à l'action main. Pourtant, un attaquant peut l'exploiter à son compte en incluant une clé host dans l'URL :
 
 <plain>
 http://www.example.com/site/legacy?param1=xy&param2=23&host=www.attacker.com
 </plain>
 
-If it is at the end of the URL it will hardly be noticed and redirects the user to the attacker.com host. A simple countermeasure would be to _(highlight)include only the expected parameters in a legacy action_ (again a whitelist approach, as opposed to removing unexpected parameters). _(highlight)And if you redirect to an URL, check it with a whitelist or a regular expression_.
+En fin d'URL, cette clé ne sera pas remarquée et redirigera l'utilisateur vers le domaine attacker.com. Une simple protection est de _(highlight)n'inclure que les paramètres attendus dans l'action legacy_ (une approche par liste blanche, par opposition à la suppression des paramètres non-voulus). _(highlight) Et si vous redirigez vers une URL, vérifiez-la avec une liste blanche ou une expression rationnelle_.
 
 h5. Self-contained XSS
 
