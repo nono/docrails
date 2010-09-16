@@ -328,15 +328,15 @@ send_file filename, :disposition => 'inline'
 
 Une autre approche (supplémentaire) est d'enregistrer les noms de fichier dans la base de données et de nommer les fichiers sur le disque d'après les identifiants dans la base de données. C'est aussi une bonne approche pour éviter qu'un éventuel code dans un fichier uploadé puisse être exécuté. Le plugin attachment_fu procède de cette manière
 
-h3. Intranet and Admin Security
+h3. Sécurité des Intranet et Administration
 
--- _Intranet and administration interfaces are popular attack targets, because they allow privileged access. Although this would require several extra-security measures, the opposite is the case in the real world._
+-- _Les intranets et les interfaces d'administration sont des cibles populaires pour les attaques car ils autorisent des accès privilégiés. Bien que cela demanderait des mesures de sécurité supplémentaires, c'est le contraire qui se passe dans le monde réel._
 
-In 2007 there was the first tailor-made trojan which stole information from an Intranet, namely the "Monster for employers" web site of Monster.com, an online recruitment web application. Tailor-made Trojans are very rare, so far, and the risk is quite low, but it is certainly a possibility and an example of how the security of the client host is important, too. However, the highest threat to Intranet and Admin applications are XSS and CSRF. 
+En 2007 est apparu le premier cheval de Troyes fait sur mesure pour voler des informations depuis un intranet, en l'occurrence, le site web "Monster pour les recruteurs" de Monster/com, une application web pour l'emploi en ligne. Les chevaux de Troyes faits sur mesure sont très rares, jusqu'ici, et le risque reste faible, mais c'est une possibilité et un exemple qui montre que la sécurité du poste client est aussi importante. Pourtant, les plus grandes menaces pour les intranets et interfaces d'administration sont les attaques XSS et CSRF.
 
-*XSS*  If your application re-displays malicious user input from the extranet, the application will be vulnerable to XSS. User names, comments, spam reports, order addresses are just a few uncommon examples, where there can be XSS.
+*XSS*  Si votre application réaffiche des entrées malicieuses de l'utilisateur depuis l'extranet, l'application est vulnérable au XSS. Les noms d'utilisateurs, commentaires, rapports de spam et adresses de livraison en sont quelques exemples.
 
-Having one single place in the admin interface or Intranet, where the input has not been sanitized, makes the entire application vulnerable. Possible exploits include stealing the privileged administrator's cookie, injecting an iframe to steal the administrator's password or installing malicious software through browser security holes to take over the administrator's computer.
+Il suffit d'un seul endroit dans l'interface d'administration ou l'intranet où les données ne sont pas nettoyées pour rendre vulnérable l'application dans sa globalité. Les exploits possibles vont du vol du cookie d'un administrateur privilégié à l'injection d'une iframe pour voler le mot de passe d'un administrateur, en passant par l'installation d'un logiciel malicieux à travers une faille de sécurité d'un navigateur pour prendre le contrôle de l'ordinateur d'un administrateur.
 
 Refer to the Injection section for countermeasures against XSS. It is _(highlight)recommended to use the SafeErb plugin_ also in an Intranet or administration interface.
 
