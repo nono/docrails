@@ -338,17 +338,17 @@ En 2007 est apparu le premier cheval de Troyes fait sur mesure pour voler des in
 
 Il suffit d'un seul endroit dans l'interface d'administration ou l'intranet où les données ne sont pas nettoyées pour rendre vulnérable l'application dans sa globalité. Les exploits possibles vont du vol du cookie d'un administrateur privilégié à l'injection d'une iframe pour voler le mot de passe d'un administrateur, en passant par l'installation d'un logiciel malicieux à travers une faille de sécurité d'un navigateur pour prendre le contrôle de l'ordinateur d'un administrateur.
 
-Refer to the Injection section for countermeasures against XSS. It is _(highlight)recommended to use the SafeErb plugin_ also in an Intranet or administration interface.
+Veuillez vous référer à la section sur les injections pour les protections contre les XSS. Il est _(highlight)recommandé d'utiliser le plugin SafeErb_ pour les intranets et interfaces d'administration.
 
-*CSRF*  Cross-Site Reference Forgery (CSRF) is a gigantic attack method, it allows the attacker to do everything the administrator or Intranet user may do. As you have already seen above how CSRF works, here are a few examples of what attackers can do in the Intranet or admin interface.
+*CSRF*  Cross-Site Request Forgery (CSRF) est une méthode d'attaque géante, elle permet à l'attaquant de faire tout ce qu'un administrateur ou un utilisateur de l'intranet pourrait faire. Comme nous avons déjà vu comment CSRF fonctionne, voici quelques exemples appliqués aux intranets et interfaces d'administration.
 
-A real-world example is a "router reconfiguration by CSRF":http://www.h-online.com/security/Symantec-reports-first-active-attack-on-a-DSL-router--/news/102352. The attackers sent a malicious e-mail, with CSRF in it, to Mexican users. The e-mail claimed there was an e-card waiting for them, but it also contained an image tag that resulted in a HTTP-GET request to reconfigure the user's router (which is a popular model in Mexico). The request changed the DNS-settings so that requests to a Mexico-based banking site would be mapped to the attacker's site. Everyone who accessed the banking site through that router saw the attacker's fake web site and had his credentials stolen.
+Un exemple du monde réel est "la reconfiguration de routeur par CSRF":http://www.h-online.com/security/Symantec-reports-first-active-attack-on-a-DSL-router--/news/102352. Les attaquants ont envoyé un courriel malicieux, avec du CSRF dedans, à des utilisateurs mexicains. Ce courriel affirme qu'une e-card les attend, mais il contient aussi une balise image qui provoque une requête HTTP de type GET pour reconfigurer le routeur de l'utilisateur (qui est un modèle très populaire à Mexico). La requête change la configuration DNS de telle sorte que les accès un site bancaire basé à Mexico soient transférés sur le site de l'attaquant. Tous ceux qui visitent le site bancaire à travers le routeur voient le faux site web de l'attaquant et se font voler leurs identifiants.
 
-Another example changed Google Adsense's e-mail address and password by. If the victim was logged into Google Adsense, the administration interface for Google advertisements campaigns, an attacker could change his credentials. 
+Un autre exemple a modifié l'adresse de courriel et le mot de passe sur Google Adsense. Si la victime était connecté sur Google Adsense, l'interface d'administration des campagnes de publicité de Google, un attaquant peut changer ses identifiants.
 
-Another popular attack is to spam your web application, your blog or forum to propagate malicious XSS. Of course, the attacker has to know the URL structure, but most Rails URLs are quite straightforward or they will be easy to find out, if it is an open-source application's admin interface. The attacker may even do 1,000 lucky guesses by just including malicious IMG-tags which try every possible combination.
+Une attaque populaire est d'envoyer du spam sur votre application web, votre blog ou forum pour propager un XSS. Bien sûr, l'attaquant a besoin de connaître la structure des URL, mais la plupart des URL générés par Rails sont relativement directes ou seront faciles à trouver si c'est l'interface d'administration d'une application Open Source. L'attaquant peut même tenter des milliers d'essais juste en incluant des balises IMG malicieuses pour chaque combinaison possible.
 
-For _(highlight)countermeasures against CSRF in administration interfaces and Intranet applications, refer to the countermeasures in the CSRF section_.
+Pour _(highlight)se protéger contre les CSRF dans les interfaces d'administration et les applications Intranet, veuillez vous référer à la section sur les contremesures de CSRF_.
 
 h4. Additional Precautions
 
